@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuizMaker 🎓</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #1D9E75;
+      --green-dark: #0F6E56;
+      --green-light: #E1F5EE;
+      --green-text: #085041;
+      --blue: #378ADD;
+      --blue-dark: #185FA5;
+      --blue-light: #E6F1FB;
+      --blue-text: #0C447C;
+      --red: #E24B4A;
+      --red-light: #FCEBEB;
+      --red-text: #501313;
+      --amber: #BA7517;
+      --amber-light: #FAEEDA;
+      --amber-text: #633806;
+      --gray-bg: #F7F6F2;
+      --gray-border: #D3D1C7;
+      --gray-muted: #888780;
+      --text: #2C2C2A;
+      --text-light: #5F5E5A;
+      --white: #ffffff;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--gray-bg);
+      min-height: 100vh;
+      color: var(--text);
+    }
+
+    /* ===== SCREENS ===== */
+    .screen { display: none; min-height: 100vh; }
+    .screen.active { display: flex; flex-direction: column; }
+
+    /* ===== HOME ===== */
+    #screen-home {
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      background: linear-gradient(160deg, #E1F5EE 0%, #E6F1FB 50%, #FFF9E6 100%);
+    }
+
+    .home-inner { text-align: center; max-width: 480px; }
+    .home-dinos { font-size: 48px; letter-spacing: 6px; display: block; margin-bottom: 1rem; animation: float 2s ease-in-out infinite alternate; }
+    @keyframes float { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+
+    .home-title { font-size: 42px; font-weight: 900; color: var(--green-dark); line-height: 1.1; margin-bottom: 8px; }
+    .home-sub { font-size: 16px; color: var(--text-light); margin-bottom: 2.5rem; }
+
+    .home-buttons { display: grid; gap: 12px; }
+
+    .btn-hero {
+      display: flex; align-items: center; gap: 14px;
+      padding: 18px 24px;
+      border: none; border-radius: var(--radius);
+      font-family: 'Nunito', sans-serif;
+      font-size: 17px; font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      text-align: left;
+    }
+    .btn-hero:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .btn-hero:active { transform: translateY(0); }
+
+    .btn-hero .btn-icon { font-size: 30px; flex-shrink: 0; }
+    .btn-hero .btn-label { font-size: 18px; font-weight: 900; display: block; }
+    .btn-hero .btn-desc { font-size: 13px; font-weight: 600; opacity: 0.8; display: block; }
+
+    .btn-teacher { background: linear-gradient(135deg, #1D9E75, #0F6E56); color: #fff; }
+    .btn-student { background: linear-gradient(135deg, #378ADD, #185FA5); color: #fff; }
+
+    .home-footer { margin-top: 2rem; font-size: 12px; color: var(--gray-muted); }
+
+    /* ===== TEACHER SCREEN ===== */
+    #screen-teacher { background: var(--gray-bg); }
+
+    .topbar {
+      background: var(--white);
+      border-bottom: 1.5px solid var(--gray-border);
+      padding: 12px 20px;
+      display: flex; align-items: center; gap: 12px;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .topbar-back {
+      background: var(--gray-bg); border: 1.5px solid var(--gray-border);
+      border-radius: 8px; padding: 6px 12px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      font-family: 'Nunito', sans-serif; color: var(--text);
+      transition: background 0.1s;
+    }
+    .topbar-back:hover { background: var(--gray-border); }
+    .topbar-title { font-size: 18px; font-weight: 900; color: var(--green-dark); flex: 1; }
+    .topbar-badge { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 99px; background: var(--green-light); color: var(--green-text); }
+
+    .teacher-body { padding: 1.5rem 1rem; max-width: 700px; margin: 0 auto; width: 100%; }
+
+    .section-label {
+      font-size: 11px; font-weight: 800; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--gray-muted);
+      margin-bottom: 8px; margin-top: 1.5rem;
+    }
+    .section-label:first-child { margin-top: 0; }
+
+    .input-field {
+      width: 100%; padding: 12px 14px;
+      border: 1.5px solid var(--gray-border);
+      border-radius: var(--radius-sm);
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px; font-weight: 600;
+      background: var(--white); color: var(--text);
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    .input-field:focus { border-color: var(--green); }
+
+    /* Question list */
+    .questions-list { display: grid; gap: 10px; margin-bottom: 1rem; }
+
+    .q-card {
+      background: var(--white);
+      border: 1.5px solid var(--gray-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: box-shadow 0.15s;
+    }
+    .q-card:hover { box-shadow: var(--shadow); }
+
+    .q-card-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .q-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--green-light); color: var(--green-text);
+      font-size: 13px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .q-preview { flex: 1; font-size: 14px; font-weight: 700; color: var(--text); }
+    .q-preview.empty { color: var(--gray-muted); font-style: italic; }
+    .q-toggle { font-size: 12px; color: var(--gray-muted); transition: transform 0.2s; }
+    .q-toggle.open { transform: rotate(180deg); }
+    .q-delete {
+      background: var(--red-light); border: none; border-radius: 6px;
+      width: 28px; height: 28px; cursor: pointer;
+      font-size: 14px; color: var(--red);
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.1s;
+    }
+    .q-delete:hover { background: #F7C1C1; }
+
+    .q-card-body { padding: 0 14px 14px; display: none; }
+    .q-card-body.open { display: block; }
+
+    .q-row { margin-bottom: 10px; }
+    .q-row-label { font-size: 12px; font-weight: 700; color: var(--gray-muted); margin-bottom: 4px; }
+
+    .options-editor { display: grid; gap: 6px; }
+    .option-row { display: flex; align-items: center; gap: 8px; }
+    .option-letter {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--gray-bg); border: 1.5px solid var(--gray-border);
+      font-size: 13px; font-weight: 800; color: var(--text-light);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; cursor: pointer; transition: all 0.15s;
+    }
+    .option-letter.correct { background: var(--green); border-color: var(--green); color: #fff; }
+    .option-row input { flex: 1; }
+
+    .correct-hint { font-size: 12px; color: var(--gray-muted); margin-top: 6px; }
+    .correct-hint span { color: var(--green); font-weight: 700; }
+
+    .btn-add-question {
+      width: 100%; padding: 14px;
+      border: 2px dashed var(--gray-border);
+      border-radius: var(--radius);
+      background: transparent;
+      font-family: 'Nunito', sans-serif;
+      font-size: 15px; font-weight: 800;
+      color: var(--gray-muted); cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-add-question:hover { border-color: var(--green); color: var(--green); background: var(--green-light); }
+
+    .btn-start-quiz {
+      width: 100%; padding: 16px;
+      background: linear-gradient(135deg, #1D9E75, #0F6E56);
+      border: none; border-radius: var(--radius);
+      font-family: 'Nunito', sans-serif;
+      font-size: 18px; font-weight: 900;
+      color: #fff; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(29,158,117,0.3);
+      transition: transform 0.15s, box-shadow 0.15s;
+      margin-top: 1rem;
+    }
+    .btn-start-quiz:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(29,158,117,0.4); }
+    .btn-start-quiz:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .validation-msg { font-size: 13px; color: var(--red); font-weight: 700; margin-top: 8px; text-align: center; display: none; }
+
+    /* ===== QUIZ SCREEN ===== */
+    #screen-quiz {
+      background: linear-gradient(160deg, #E1F5EE 0%, #E6F1FB 60%, #FFF9E6 100%);
+      align-items: center; justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .quiz-container { width: 100%; max-width: 580px; }
+
+    .quiz-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .quiz-title-small { font-size: 16px; font-weight: 800; color: var(--green-dark); }
+    .quiz-score-badge {
+      font-size: 13px; font-weight: 800; padding: 4px 12px;
+      border-radius: 99px; background: var(--white);
+      color: var(--text); box-shadow: var(--shadow);
+    }
+
+    .quiz-progress { margin-bottom: 1.25rem; }
+    .quiz-progress-label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--text-light); margin-bottom: 6px; }
+    .quiz-progress-bg { background: rgba(255,255,255,0.5); border-radius: 99px; height: 10px; }
+    .quiz-progress-fill { height: 10px; border-radius: 99px; background: linear-gradient(90deg, var(--green), #5DCAA5); transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+
+    .quiz-card {
+      background: var(--white);
+      border-radius: 24px;
+      padding: 1.75rem 1.5rem;
+      box-shadow: var(--shadow-lg);
+      animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+    .quiz-emoji { font-size: 44px; display: block; margin-bottom: 12px; }
+    .quiz-question { font-size: 19px; font-weight: 800; color: var(--text); margin-bottom: 1.25rem; line-height: 1.4; }
+
+    .quiz-options { display: grid; gap: 10px; margin-bottom: 0; }
+
+    .quiz-opt {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 16px;
+      background: var(--gray-bg);
+      border: 2px solid var(--gray-border);
+      border-radius: 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px; font-weight: 700;
+      color: var(--text); cursor: pointer;
+      transition: all 0.15s; text-align: left;
+    }
+    .quiz-opt:hover:not(:disabled) { background: var(--green-light); border-color: var(--green); color: var(--green-text); transform: translateX(4px); }
+    .quiz-opt .ql { width: 30px; height: 30px; border-radius: 50%; background: var(--gray-border); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; transition: all 0.15s; }
+    .quiz-opt:hover:not(:disabled) .ql { background: var(--green); color: #fff; }
+    .quiz-opt.correct { background: var(--green-light); border-color: var(--green); color: var(--green-text); }
+    .quiz-opt.correct .ql { background: var(--green); color: #fff; }
+    .quiz-opt.wrong { background: var(--red-light); border-color: var(--red); color: var(--red-text); }
+    .quiz-opt.wrong .ql { background: var(--red); color: #fff; }
+    .quiz-opt:disabled { cursor: default; transform: none; }
+
+    .quiz-feedback {
+      margin-top: 14px; padding: 12px 16px;
+      border-radius: 12px; font-size: 14px; font-weight: 700;
+      line-height: 1.5; animation: slideUp 0.2s ease;
+    }
+    .quiz-feedback.correct { background: var(--green-light); color: var(--green-text); border-left: 4px solid var(--green); }
+    .quiz-feedback.wrong { background: var(--red-light); color: var(--red-text); border-left: 4px solid var(--red); }
+
+    .quiz-next {
+      width: 100%; margin-top: 1rem; padding: 14px;
+      background: linear-gradient(135deg, var(--green), var(--green-dark));
+      border: none; border-radius: 14px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 17px; font-weight: 900; color: #fff;
+      cursor: pointer; box-shadow: 0 4px 16px rgba(29,158,117,0.3);
+      transition: transform 0.15s;
+    }
+    .quiz-next:hover { transform: translateY(-2px); }
+
+    /* ===== RESULT SCREEN ===== */
+    #screen-result {
+      background: linear-gradient(160deg, #E1F5EE 0%, #E6F1FB 60%, #FFF9E6 100%);
+      align-items: center; justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .result-card {
+      width: 100%; max-width: 480px;
+      background: var(--white);
+      border-radius: 28px; padding: 2.5rem 2rem;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+      animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .result-emoji { font-size: 72px; display: block; margin-bottom: 12px; animation: pop 0.5s cubic-bezier(0.175,0.885,0.32,1.275); }
+    @keyframes pop { from { transform: scale(0) rotate(-10deg); } to { transform: scale(1) rotate(0); } }
+
+    .result-title { font-size: 26px; font-weight: 900; color: var(--green-dark); margin-bottom: 6px; }
+    .result-subtitle { font-size: 15px; color: var(--text-light); margin-bottom: 1.25rem; }
+    .result-score { font-size: 56px; font-weight: 900; color: var(--green); line-height: 1; margin-bottom: 4px; }
+    .result-score span { font-size: 28px; color: var(--gray-muted); }
+    .result-stars { font-size: 30px; letter-spacing: 6px; margin: 10px 0 1.5rem; display: block; }
+
+    .result-pills { display: flex; justify-content: center; gap: 10px; margin-bottom: 1.75rem; flex-wrap: wrap; }
+    .rpill { padding: 6px 16px; border-radius: 99px; font-size: 14px; font-weight: 800; }
+    .rpill-ok { background: var(--green-light); color: var(--green-text); }
+    .rpill-bad { background: var(--red-light); color: var(--red-text); }
+
+    .result-btns { display: grid; gap: 10px; }
+    .btn-retry {
+      padding: 14px; border: none; border-radius: var(--radius);
+      font-family: 'Nunito', sans-serif; font-size: 16px; font-weight: 800;
+      cursor: pointer; transition: transform 0.15s;
+    }
+    .btn-retry:hover { transform: translateY(-2px); }
+    .btn-retry-play { background: linear-gradient(135deg, var(--green), var(--green-dark)); color: #fff; box-shadow: 0 4px 16px rgba(29,158,117,0.3); }
+    .btn-retry-edit { background: linear-gradient(135deg, var(--blue), var(--blue-dark)); color: #fff; box-shadow: 0 4px 16px rgba(55,138,221,0.3); }
+    .btn-retry-home { background: var(--gray-bg); color: var(--text); border: 1.5px solid var(--gray-border); }
+
+    /* ===== STUDENT PICK ===== */
+    #screen-student {
+      align-items: center; justify-content: center;
+      padding: 2rem 1rem;
+      background: linear-gradient(160deg, #E6F1FB 0%, #E1F5EE 100%);
+    }
+    .student-inner { width: 100%; max-width: 480px; text-align: center; }
+    .student-inner h2 { font-size: 28px; font-weight: 900; color: var(--blue-dark); margin-bottom: 8px; }
+    .student-inner p { font-size: 15px; color: var(--text-light); margin-bottom: 1.5rem; }
+
+    .quiz-picker { display: grid; gap: 10px; margin-bottom: 1.5rem; }
+    .quiz-pick-item {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--white); border: 2px solid var(--gray-border);
+      border-radius: var(--radius); padding: 14px 16px;
+      cursor: pointer; transition: all 0.15s; text-align: left;
+    }
+    .quiz-pick-item:hover { border-color: var(--blue); background: var(--blue-light); transform: translateX(4px); }
+    .quiz-pick-icon { font-size: 28px; flex-shrink: 0; }
+    .quiz-pick-name { font-size: 16px; font-weight: 800; color: var(--text); display: block; }
+    .quiz-pick-count { font-size: 13px; color: var(--gray-muted); font-weight: 600; display: block; }
+
+    .no-quizzes { font-size: 15px; color: var(--gray-muted); padding: 2rem; }
+
+    @media (max-width: 480px) {
+      .home-title { font-size: 32px; }
+      .quiz-question { font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="screen-home" class="screen active">
+  <div class="home-inner">
+    <span class="home-dinos">🦕 🦴 🎨</span>
+    <h1 class="home-title">QuizMaker</h1>
+    <p class="home-sub">Crea quiz per la tua classe e gioca insieme!</p>
+    <div class="home-buttons">
+      <button class="btn-hero btn-teacher" onclick="goTo('teacher')">
+        <span class="btn-icon">👩‍🏫</span>
+        <span>
+          <span class="btn-label">Sono un insegnante</span>
+          <span class="btn-desc">Crea un nuovo quiz</span>
+        </span>
+      </button>
+      <button class="btn-hero btn-student" onclick="goTo('student')">
+        <span class="btn-icon">🎒</span>
+        <span>
+          <span class="btn-label">Sono un alunno</span>
+          <span class="btn-desc">Gioca ai quiz disponibili</span>
+        </span>
+      </button>
+    </div>
+    <p class="home-footer">I quiz vengono salvati in questo browser</p>
+  </div>
+</div>
+
+<!-- TEACHER -->
+<div id="screen-teacher" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('home')">← Indietro</button>
+    <span class="topbar-title">✏️ Crea Quiz</span>
+    <span class="topbar-badge" id="q-count-badge">0 domande</span>
+  </div>
+  <div class="teacher-body">
+    <div class="section-label">Nome del quiz</div>
+    <input type="text" id="quiz-title-input" class="input-field" placeholder="Es: Quiz sulla Preistoria 🦕" oninput="updateBadge()">
+
+    <div class="section-label" style="margin-top:1.25rem">Emoji del quiz</div>
+    <input type="text" id="quiz-emoji-input" class="input-field" placeholder="Es: 🦕" maxlength="4" style="width:80px">
+
+    <div class="section-label" style="margin-top:1.25rem; display:flex; align-items:center; justify-content:space-between;">
+      <span>Domande</span>
+    </div>
+
+    <div id="questions-list" class="questions-list"></div>
+
+    <button class="btn-add-question" onclick="addQuestion()">+ Aggiungi domanda</button>
+
+    <div id="validation-msg" class="validation-msg"></div>
+    <button class="btn-start-quiz" onclick="saveAndPlay()">🚀 Salva e gioca!</button>
+  </div>
+</div>
+
+<!-- STUDENT PICK -->
+<div id="screen-student" class="screen">
+  <div class="student-inner">
+    <div style="font-size:52px;margin-bottom:12px">🎒</div>
+    <h2>Scegli un quiz!</h2>
+    <p>Seleziona il quiz che vuoi fare</p>
+    <div id="quiz-picker" class="quiz-picker"></div>
+    <button class="btn-retry btn-retry-home" style="width:100%;padding:12px" id="student-back-btn" onclick="goTo('home')">← Torna alla home</button>
+  </div>
+</div>
+
+<!-- QUIZ PLAY -->
+<div id="screen-quiz" class="screen">
+  <div class="quiz-container">
+    <div class="quiz-topbar">
+      <span class="quiz-title-small" id="play-title">Quiz</span>
+      <span class="quiz-score-badge" id="play-score">⭐ 0</span>
+    </div>
+    <div class="quiz-progress">
+      <div class="quiz-progress-label">
+        <span id="play-progress-text">Domanda 1 di ?</span>
+        <span id="play-pct">0%</span>
+      </div>
+      <div class="quiz-progress-bg">
+        <div class="quiz-progress-fill" id="play-progress-fill" style="width:0%"></div>
+      </div>
+    </div>
+    <div id="play-area"></div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="screen-result" class="screen">
+  <div class="result-card">
+    <span class="result-emoji" id="res-emoji">🏆</span>
+    <p class="result-title" id="res-title">Perfetto!</p>
+    <p class="result-subtitle" id="res-sub">Hai risposto a tutte le domande</p>
+    <p class="result-score" id="res-score">10<span> / 10</span></p>
+    <span class="result-stars" id="res-stars">⭐⭐⭐⭐⭐</span>
+    <div class="result-pills" id="res-pills"></div>
+    <div class="result-btns">
+      <button class="btn-retry btn-retry-play" onclick="replayQuiz()">🔄 Riprova</button>
+      <button class="btn-retry btn-retry-edit" onclick="goTo('teacher')">✏️ Modifica quiz</button>
+      <button class="btn-retry btn-retry-home" onclick="goTo('home')">🏠 Home</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ===== SUPABASE =====
+  const SUPABASE_URL = 'https://ktxzqabmnqenmnprgfds.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0eHpxYWJtbnFlbm1ucHJnZmRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1MDQ4NjgsImV4cCI6MjA5MDA4MDg2OH0.8Ao4c1tKVdw-Fj77fXzFX9L2sEHvncNo8vdKOH7wJBE';
+
+  async function sbFetch(path, options = {}) {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': options.prefer || 'return=representation',
+        ...options.headers
+      },
+      ...options
+    });
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(err);
+    }
+    const text = await res.text();
+    return text ? JSON.parse(text) : null;
+  }
+
+  async function loadQuizzes() {
+    return await sbFetch('quizzes?select=*&order=created_at.desc');
+  }
+
+  async function saveQuizToSupabase(quiz) {
+    const data = await sbFetch('quizzes', {
+      method: 'POST',
+      body: JSON.stringify({ title: quiz.title, emoji: quiz.emoji, questions: quiz.questions })
+    });
+    return data[0];
+  }
+
+  // ===== STATE =====
+  let currentQuestions = [];
+  let playState = { quiz: null, current: 0, score: 0, wrong: 0, answered: false };
+  const LETTERS = ['A','B','C','D'];
+  const EMOJIS = ['❓','🦕','🔥','🌍','🎨','📚','🧪','🧠','🏆','🌟','🦴','🌿'];
+
+  // ===== LOADING OVERLAY =====
+  function showLoading(msg) {
+    let el = document.getElementById('loading-overlay');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'loading-overlay';
+      el.style.cssText = 'position:fixed;inset:0;background:rgba(255,255,255,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;font-family:Nunito,sans-serif;gap:12px;';
+      el.innerHTML = '<div style="font-size:40px;animation:spin 1s linear infinite">⏳</div><p style="font-size:16px;font-weight:700;color:#0F6E56"></p>';
+      document.body.appendChild(el);
+      const style = document.createElement('style');
+      style.textContent = '@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}';
+      document.head.appendChild(style);
+    }
+    el.querySelector('p').textContent = msg;
+    el.style.display = 'flex';
+  }
+
+  function hideLoading() {
+    const el = document.getElementById('loading-overlay');
+    if (el) el.style.display = 'none';
+  }
+
+  // ===== NAVIGATION =====
+  function goTo(screen) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + screen).classList.add('active');
+    if (screen === 'teacher') initTeacher();
+    if (screen === 'student') initStudentPicker();
+  }
+
+  // ===== TEACHER =====
+  function initTeacher() {
+    currentQuestions = [{ text: '', emoji: '❓', options: ['','','',''], answer: 0, feedback: '' }];
+    document.getElementById('quiz-title-input').value = '';
+    document.getElementById('quiz-emoji-input').value = '';
+    document.getElementById('validation-msg').style.display = 'none';
+    renderQuestions();
+  }
+
+  function updateBadge() {
+    document.getElementById('q-count-badge').textContent = currentQuestions.length + ' domand' + (currentQuestions.length === 1 ? 'a' : 'e');
+  }
+
+  function addQuestion() {
+    currentQuestions.push({ text: '', emoji: EMOJIS[currentQuestions.length % EMOJIS.length], options: ['','','',''], answer: 0, feedback: '' });
+    renderQuestions();
+    setTimeout(() => {
+      const cards = document.querySelectorAll('.q-card');
+      cards[cards.length-1].scrollIntoView({ behavior: 'smooth', block: 'start' });
+      toggleCard(currentQuestions.length - 1);
+    }, 50);
+  }
+
+  function deleteQuestion(idx) {
+    if (currentQuestions.length <= 1) return;
+    currentQuestions.splice(idx, 1);
+    renderQuestions();
+  }
+
+  function toggleCard(idx) {
+    const body = document.getElementById('qbody-' + idx);
+    const toggle = document.getElementById('qtoggle-' + idx);
+    const isOpen = body.classList.contains('open');
+    document.querySelectorAll('.q-card-body').forEach(b => b.classList.remove('open'));
+    document.querySelectorAll('.q-toggle').forEach(t => t.classList.remove('open'));
+    if (!isOpen) { body.classList.add('open'); toggle.classList.add('open'); }
+  }
+
+  function setCorrect(qIdx, optIdx) {
+    currentQuestions[qIdx].answer = optIdx;
+    renderQuestions();
+    setTimeout(() => {
+      document.getElementById('qbody-' + qIdx).classList.add('open');
+      document.getElementById('qtoggle-' + qIdx).classList.add('open');
+    }, 10);
+  }
+
+  function syncField(qIdx, field, value) {
+    currentQuestions[qIdx][field] = value;
+    if (field === 'text') {
+      const preview = document.getElementById('qpreview-' + qIdx);
+      if (preview) {
+        preview.textContent = value || 'Domanda senza testo...';
+        preview.className = 'q-preview' + (value ? '' : ' empty');
+      }
+    }
+  }
+
+  function syncOption(qIdx, optIdx, value) {
+    currentQuestions[qIdx].options[optIdx] = value;
+  }
+
+  function renderQuestions() {
+    updateBadge();
+    const list = document.getElementById('questions-list');
+    list.innerHTML = currentQuestions.map((q, i) => `
+      <div class="q-card" id="qcard-${i}">
+        <div class="q-card-header" onclick="toggleCard(${i})">
+          <div class="q-num">${i+1}</div>
+          <div class="q-preview${q.text ? '' : ' empty'}" id="qpreview-${i}">${q.text || 'Domanda senza testo...'}</div>
+          <div class="q-toggle" id="qtoggle-${i}">▼</div>
+          <button class="q-delete" onclick="event.stopPropagation(); deleteQuestion(${i})" title="Elimina">✕</button>
+        </div>
+        <div class="q-card-body" id="qbody-${i}">
+          <div class="q-row">
+            <div class="q-row-label">Testo della domanda</div>
+            <input type="text" class="input-field" placeholder="Scrivi la domanda..." value="${escHtml(q.text)}"
+              oninput="syncField(${i}, 'text', this.value)">
+          </div>
+          <div class="q-row">
+            <div class="q-row-label">Emoji (opzionale)</div>
+            <input type="text" class="input-field" placeholder="❓" value="${q.emoji}" maxlength="4" style="width:72px"
+              oninput="syncField(${i}, 'emoji', this.value)">
+          </div>
+          <div class="q-row">
+            <div class="q-row-label">Risposte — clicca la lettera per segnare quella corretta</div>
+            <div class="options-editor">
+              ${q.options.map((opt, j) => `
+                <div class="option-row">
+                  <div class="option-letter${q.answer === j ? ' correct' : ''}" onclick="setCorrect(${i}, ${j})" title="Segna come corretta">${LETTERS[j]}</div>
+                  <input type="text" class="input-field" placeholder="Risposta ${LETTERS[j]}..." value="${escHtml(opt)}"
+                    oninput="syncOption(${i}, ${j}, this.value)">
+                </div>
+              `).join('')}
+            </div>
+            <div class="correct-hint">Risposta corretta: <span>${LETTERS[q.answer]}</span> — clicca una lettera per cambiarla</div>
+          </div>
+          <div class="q-row">
+            <div class="q-row-label">Spiegazione (mostrata dopo la risposta)</div>
+            <input type="text" class="input-field" placeholder="Es: Il fuoco serviva per scaldarsi e cucinare..." value="${escHtml(q.feedback)}"
+              oninput="syncField(${i}, 'feedback', this.value)">
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function escHtml(str) {
+    return (str || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  async function saveAndPlay() {
+    const title = document.getElementById('quiz-title-input').value.trim();
+    const emoji = document.getElementById('quiz-emoji-input').value.trim() || '❓';
+
+    if (!title) { showValidation('Inserisci un nome per il quiz!'); return; }
+
+    const valid = currentQuestions.filter(q => q.text.trim() && q.options.filter(o => o.trim()).length >= 2);
+    if (valid.length === 0) { showValidation('Aggiungi almeno una domanda con testo e almeno 2 risposte!'); return; }
+
+    const finalQuestions = valid.map(q => {
+      const filledOpts = q.options.filter(o => o.trim());
+      const answerText = q.options[q.answer];
+      const newAnswerIdx = filledOpts.indexOf(answerText);
+      return { ...q, options: filledOpts, answer: newAnswerIdx >= 0 ? newAnswerIdx : 0 };
+    });
+
+    document.getElementById('validation-msg').style.display = 'none';
+    showLoading('Salvataggio in corso...');
+    try {
+      const saved = await saveQuizToSupabase({ title, emoji, questions: finalQuestions });
+      hideLoading();
+      startQuiz(saved);
+    } catch(e) {
+      hideLoading();
+      showValidation('Errore nel salvataggio: ' + e.message);
+    }
+  }
+
+  function showValidation(text) {
+    const msg = document.getElementById('validation-msg');
+    msg.textContent = text;
+    msg.style.display = 'block';
+  }
+
+  // ===== STUDENT PICKER =====
+  async function initStudentPicker() {
+    const picker = document.getElementById('quiz-picker');
+    picker.innerHTML = '<p class="no-quizzes">Caricamento quiz...</p>';
+    try {
+      const quizzes = await loadQuizzes();
+      if (!quizzes || quizzes.length === 0) {
+        picker.innerHTML = '<p class="no-quizzes">Nessun quiz disponibile.<br>Chiedi all\'insegnante di crearne uno!</p>';
+        return;
+      }
+      picker.innerHTML = quizzes.map(q => `
+        <div class="quiz-pick-item" onclick='startQuiz(${JSON.stringify(q).replace(/'/g,"&#39;")})'>
+          <span class="quiz-pick-icon">${q.emoji}</span>
+          <span>
+            <span class="quiz-pick-name">${escHtml(q.title)}</span>
+            <span class="quiz-pick-count">${q.questions.length} domand${q.questions.length === 1 ? 'a' : 'e'}</span>
+          </span>
+        </div>
+      `).join('');
+    } catch(e) {
+      picker.innerHTML = '<p class="no-quizzes">Errore nel caricamento: ' + e.message + '</p>';
+    }
+  }
+
+  // ===== PLAY =====
+  function startQuiz(quiz) {
+    playState = { quiz, current: 0, score: 0, wrong: 0, answered: false };
+    goTo('quiz');
+    renderPlay();
+  }
+
+  function replayQuiz() { startQuiz(playState.quiz); }
+
+  function renderPlay() {
+    const { quiz, current, score } = playState;
+    const total = quiz.questions.length;
+    const pct = Math.round((current / total) * 100);
+
+    document.getElementById('play-title').textContent = quiz.emoji + ' ' + quiz.title;
+    document.getElementById('play-score').textContent = '⭐ ' + score;
+    document.getElementById('play-progress-text').textContent = `Domanda ${current + 1} di ${total}`;
+    document.getElementById('play-pct').textContent = pct + '%';
+    document.getElementById('play-progress-fill').style.width = pct + '%';
+
+    if (current >= total) { showResult(); return; }
+
+    const q = quiz.questions[current];
+    playState.answered = false;
+
+    document.getElementById('play-area').innerHTML = `
+      <div class="quiz-card">
+        <span class="quiz-emoji">${q.emoji || '❓'}</span>
+        <p class="quiz-question">${escHtml(q.text)}</p>
+        <div class="quiz-options">
+          ${q.options.map((opt, i) => `
+            <button class="quiz-opt" onclick="pickAnswer(${i})">
+              <span class="ql">${LETTERS[i]}</span>
+              ${escHtml(opt)}
+            </button>
+          `).join('')}
+        </div>
+        <div id="play-feedback"></div>
+      </div>
+      <button class="quiz-next" id="play-next" style="display:none" onclick="nextQuestion()">
+        ${current < total - 1 ? 'Prossima domanda →' : 'Vedi il risultato! 🎉'}
+      </button>
+    `;
+  }
+
+  function pickAnswer(idx) {
+    if (playState.answered) return;
+    playState.answered = true;
+    const q = playState.quiz.questions[playState.current];
+    const btns = document.querySelectorAll('.quiz-opt');
+    btns.forEach(b => b.disabled = true);
+    btns[q.answer].classList.add('correct');
+    const fb = document.getElementById('play-feedback');
+    if (idx === q.answer) {
+      playState.score++;
+      document.getElementById('play-score').textContent = '⭐ ' + playState.score;
+      fb.innerHTML = `<div class="quiz-feedback correct">✅ ${q.feedback || 'Esatto!'}</div>`;
+    } else {
+      playState.wrong++;
+      btns[idx].classList.add('wrong');
+      const correctText = q.options[q.answer];
+      fb.innerHTML = `<div class="quiz-feedback wrong">❌ Risposta sbagliata! La risposta corretta era: <strong>${escHtml(correctText)}</strong>${q.feedback ? '. ' + q.feedback : '.'}</div>`;
+    }
+    document.getElementById('play-next').style.display = 'block';
+  }
+
+  function nextQuestion() {
+    playState.current++;
+    if (playState.current >= playState.quiz.questions.length) showResult();
+    else renderPlay();
+  }
+
+  function showResult() {
+    const { score, wrong, quiz } = playState;
+    const total = quiz.questions.length;
+    const pct = score / total;
+    let emoji, title, stars;
+    if (pct === 1)       { emoji = '🏆'; title = 'Perfetto! Sei un campione!'; stars = '⭐⭐⭐⭐⭐'; }
+    else if (pct >= 0.8) { emoji = '🎉'; title = 'Fantastico! Ottimo lavoro!'; stars = '⭐⭐⭐⭐'; }
+    else if (pct >= 0.6) { emoji = '😊'; title = 'Bravo! Hai fatto bene!'; stars = '⭐⭐⭐'; }
+    else if (pct >= 0.4) { emoji = '👍'; title = 'Bene! Puoi migliorare!'; stars = '⭐⭐'; }
+    else                 { emoji = '📚'; title = 'Studia ancora un po\'!'; stars = '⭐'; }
+
+    document.getElementById('res-emoji').textContent = emoji;
+    document.getElementById('res-title').textContent = title;
+    document.getElementById('res-sub').textContent = 'Hai completato: ' + quiz.title;
+    document.getElementById('res-score').innerHTML = score + '<span> / ' + total + '</span>';
+    document.getElementById('res-stars').textContent = stars;
+    document.getElementById('res-pills').innerHTML = `
+      <span class="rpill rpill-ok">✅ ${score} corrette</span>
+      <span class="rpill rpill-bad">❌ ${wrong} sbagliate</span>
+    `;
+    goTo('result');
+  }
+
+  // ===== INIT: ?admin = insegnante, default = alunno =====
+  const isAdminMode = window.location.search.includes('admin') || window.location.hash.includes('admin');
+
+  if (isAdminMode) {
+    // Insegnante: mostra la home normale
+    goTo('home');
+  } else {
+    // Alunno: vai direttamente alla lista quiz, nascondi tutto il resto
+    document.querySelectorAll('.btn-retry-edit').forEach(b => b.style.display = 'none');
+    document.querySelectorAll('.btn-retry-home').forEach(b => {
+      b.textContent = '🔄 Scegli un altro quiz';
+      b.onclick = () => goTo('student');
+    });
+    const backBtn = document.getElementById('student-back-btn');
+    if (backBtn) backBtn.style.display = 'none';
+    goTo('student');
+  }
+</script>
+</body>
+</html>
