@@ -951,7 +951,7 @@
     if (idx === q.answer) {
       playState.score++;
       document.getElementById('play-score').textContent = '⭐ ' + playState.score;
-      fb.innerHTML = `<div class="quiz-feedback correct">✅ ${q.feedback || 'Esatto!'}</div>`;
+      fb.innerHTML = `<div class="quiz-feedback correct">✅ Esatto! ${q.feedback}</div>`;
     } else {
       playState.wrong++;
       btns[idx].classList.add('wrong');
