@@ -1,51 +1,47 @@
 # RUOLO
-Il tuo compito è generare delle query SQL come indicato nella sezione "ESEMPIO DI RIFERIMENTO".
+Agisci come un esperto Database Administrator e Content Creator. Il tuo compito è generare una query SQL `INSERT` perfettamente formattata per popolare un database di quiz.
 
 # CONTESTO
-Ho bisogno di creare delle query SQL che possano essere utilizzate per inserire dei nuovi quiz come indicato sotto.
+Il codice generato verrà eseguito in un ambiente PostgreSQL. Le domande devono essere originali, coinvolgenti e accurate dal punto di vista storico/scientifico.
 
 # SCHEMA TABELLE
 - **Tabella:** `quizzes`
-    - `id` (uuid): Chiave primaria (auto-generata)
-    - `created_at` (timestamp): Data di creazione (auto-generata)
-    - `title` (text): Titolo del quiz
-    - `emoji` (text): Emoji associato al quiz
-    - `questions` (jsonb): Domande del quiz
+  - `id` (uuid): Chiave primaria (auto-generata).
+  - `created_at` (timestamp): Default `now()`.
+  - `title` (text): Titolo del quiz.
+  - `emoji` (text): Emoji rappresentativa.
+  - `questions` (jsonb): Array di oggetti domanda.
+
+# VINCOLI TECNICI (CRITICI)
+1. **SQL Escape:** Usa SEMPRE il doppio apostrofo (`''`) per ogni apostrofo presente nel testo (es: `l''era`, `sant''Agostino`).
+2. **Validità JSON:** Il campo `questions` deve essere un array JSON valido castato come `::jsonb`.
+3. **Indice Risposta:** Il campo `answer` deve essere un intero che rappresenta l'indice dell'opzione corretta partendo da 0 (0 = prima opzione).
+4. **Nessun ID manuale:** Non includere i campi `id` o `created_at` nella query, poiché sono gestiti dal database.
+
+# LINEE GUIDA CONTENUTO
+- **Distrattori:** Le opzioni errate devono essere plausibili, non ovvie.
+- **Feedback:** Deve essere educativo e aggiungere una curiosità oltre alla semplice conferma della risposta.
+- **Emoji:** Usa emoji diverse e pertinenti per ogni singola domanda.
 
 # ESEMPIO DI RIFERIMENTO
-`<example>`
+<example>
 INSERT INTO quizzes (title, emoji, questions) VALUES (
-'Cucina Greca',
-'🇬🇷',
+'Astronomia Base',
+'🚀',
 '[
-{
-"text": "Come si chiama la famosa insalata greca con pomodori, cetrioli, olive e feta?",
-"emoji": "🥗",
-"options": ["Insalata niçoise", "Insalata Choriatiki", "Insalata caprese", "Insalata Caesar"],
-"answer": 1,
-"feedback": "La Choriatiki (χωριάτικη) è la classica insalata greca del villaggio, con feta, olive kalamata e origano."
-},
-{
-"text": "Qual è il piatto greco fatto con carne macinata e melanzane a strati?",
-"emoji": "🍆",
-"options": ["Spanakopita", "Souvlaki", "Moussaka", "Gyros"],
-"answer": 2,
-"feedback": "La moussaka è uno dei piatti più famosi della cucina greca: strati di melanzane, carne macinata e
-besciamella."
-}
+  {
+    "text": "Qual è il pianeta più vicino al Sole?",
+    "emoji": "☀️",
+    "options": ["Venere", "Mercurio", "Marte", "Terra"],
+    "answer": 1,
+    "feedback": "Mercurio è il pianeta più vicino, ma Venere è il più caldo a causa dell''effetto serra."
+  }
 ]'::jsonb
 );
-`</example>`
+</example>
 
-Dove:
-- text rappresenta il testo della domanda
-- emoji rappresenta l'emoji associata alla domanda
-- options rappresenta le opzioni di risposta
-- answer rappresenta l'indice dell'opzione corretta
-- feedback rappresenta il feedback fornito dopo la risposta
-
-# DATI QUIZ
-
-- Argomento: Storia dell'antico Egitto
-- Numero di domande: 10
-- Difficoltà: Facile
+# DATI PER GENERAZIONE ATTUALE
+- **Argomento:** [INSERISCI ARGOMENTO]
+- **Numero di domande:** [ES: 10]
+- **Difficoltà:** [ES: Medio/Difficile]
+- **Tono:** [ES: Professionale/Ironico]
