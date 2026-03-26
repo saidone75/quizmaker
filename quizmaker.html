@@ -357,6 +357,62 @@
 
     .no-quizzes { font-size: 15px; color: var(--gray-muted); padding: 2rem; }
 
+    /* ===== ADMIN MANAGE ===== */
+    #screen-manage { background: var(--gray-bg); }
+
+    .manage-list { display: grid; gap: 12px; padding: 1.5rem 1rem; max-width: 700px; margin: 0 auto; }
+
+    .manage-card {
+      background: var(--white);
+      border: 1.5px solid var(--gray-border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      display: flex; align-items: center; gap: 14px;
+      box-shadow: var(--shadow);
+    }
+    .manage-card-icon { font-size: 32px; flex-shrink: 0; }
+    .manage-card-info { flex: 1; min-width: 0; }
+    .manage-card-title { font-size: 16px; font-weight: 800; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .manage-card-meta { font-size: 13px; color: var(--gray-muted); font-weight: 600; margin-top: 2px; }
+    .manage-card-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+    .btn-icon-action {
+      width: 36px; height: 36px; border-radius: 8px; border: none;
+      font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; font-family: 'Nunito', sans-serif;
+    }
+    .btn-edit-quiz { background: var(--blue-light); color: var(--blue-dark); }
+    .btn-edit-quiz:hover { background: #B5D4F4; }
+    .btn-delete-quiz { background: var(--red-light); color: var(--red); }
+    .btn-delete-quiz:hover { background: #F7C1C1; }
+    .btn-play-quiz { background: var(--green-light); color: var(--green-dark); }
+    .btn-play-quiz:hover { background: #9FE1CB; }
+
+    .manage-empty { text-align: center; padding: 3rem 1rem; color: var(--gray-muted); font-size: 15px; font-weight: 600; }
+    .manage-empty span { font-size: 48px; display: block; margin-bottom: 12px; }
+
+    /* Modal confirm */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999; padding: 1rem;
+    }
+    .modal-box {
+      background: var(--white); border-radius: var(--radius);
+      padding: 1.75rem; max-width: 360px; width: 100%;
+      text-align: center; box-shadow: var(--shadow-lg);
+      animation: slideUp 0.2s ease;
+    }
+    .modal-emoji { font-size: 48px; display: block; margin-bottom: 12px; }
+    .modal-title { font-size: 20px; font-weight: 900; color: var(--text); margin-bottom: 8px; }
+    .modal-sub { font-size: 14px; color: var(--text-light); margin-bottom: 1.5rem; line-height: 1.5; }
+    .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .btn-modal { padding: 12px; border: none; border-radius: var(--radius-sm); font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800; cursor: pointer; transition: transform 0.1s; }
+    .btn-modal:hover { transform: translateY(-1px); }
+    .btn-modal-cancel { background: var(--gray-bg); color: var(--text); border: 1.5px solid var(--gray-border); }
+    .btn-modal-confirm { background: var(--red); color: #fff; }
+
     @media (max-width: 480px) {
       .home-title { font-size: 32px; }
       .quiz-question { font-size: 17px; }
@@ -365,29 +421,29 @@
 </head>
 <body>
 
-<!-- HOME -->
+<!-- HOME (admin only) -->
 <div id="screen-home" class="screen active">
   <div class="home-inner">
     <span class="home-dinos">🦕 🦴 🎨</span>
     <h1 class="home-title">QuizMaker</h1>
-    <p class="home-sub">Crea quiz per la tua classe e gioca insieme!</p>
+    <p class="home-sub">Pannello insegnante</p>
     <div class="home-buttons">
       <button class="btn-hero btn-teacher" onclick="goTo('teacher')">
-        <span class="btn-icon">👩‍🏫</span>
+        <span class="btn-icon">✏️</span>
         <span>
-          <span class="btn-label">Sono un insegnante</span>
-          <span class="btn-desc">Crea un nuovo quiz</span>
+          <span class="btn-label">Crea nuovo quiz</span>
+          <span class="btn-desc">Aggiungi un nuovo quiz per la classe</span>
         </span>
       </button>
-      <button class="btn-hero btn-student" onclick="goTo('student')">
-        <span class="btn-icon">🎒</span>
+      <button class="btn-hero btn-student" onclick="goTo('manage')">
+        <span class="btn-icon">📋</span>
         <span>
-          <span class="btn-label">Sono un alunno</span>
-          <span class="btn-desc">Gioca ai quiz disponibili</span>
+          <span class="btn-label">Gestisci quiz</span>
+          <span class="btn-desc">Modifica o cancella i quiz esistenti</span>
         </span>
       </button>
     </div>
-    <p class="home-footer">I quiz vengono salvati in questo browser</p>
+    <p class="home-footer">Modalità insegnante — link segreto 🔒</p>
   </div>
 </div>
 
@@ -416,6 +472,16 @@
     <div id="validation-msg" class="validation-msg"></div>
     <button class="btn-start-quiz" onclick="saveAndPlay()">🚀 Salva e gioca!</button>
   </div>
+</div>
+
+<!-- MANAGE QUIZZES (admin) -->
+<div id="screen-manage" class="screen">
+  <div class="topbar">
+    <button class="topbar-back" onclick="goTo('home')">← Indietro</button>
+    <span class="topbar-title">📋 Gestisci Quiz</span>
+    <button class="topbar-badge" style="cursor:pointer;border:none;font-family:Nunito,sans-serif;font-size:12px;font-weight:800;" onclick="goTo('teacher')">+ Nuovo</button>
+  </div>
+  <div id="manage-list" class="manage-list"></div>
 </div>
 
 <!-- STUDENT PICK -->
@@ -502,8 +568,21 @@
     return data[0];
   }
 
+  async function updateQuizInSupabase(id, quiz) {
+    const data = await sbFetch('quizzes?id=eq.' + id, {
+      method: 'PATCH',
+      body: JSON.stringify({ title: quiz.title, emoji: quiz.emoji, questions: quiz.questions })
+    });
+    return data ? data[0] : null;
+  }
+
+  async function deleteQuizFromSupabase(id) {
+    await sbFetch('quizzes?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
+  }
+
   // ===== STATE =====
   let currentQuestions = [];
+  let editingQuizId = null; // null = new quiz, uuid = editing existing
   let playState = { quiz: null, current: 0, score: 0, wrong: 0, answered: false };
   const LETTERS = ['A','B','C','D'];
   const EMOJIS = ['❓','🦕','🔥','🌍','🎨','📚','🧪','🧠','🏆','🌟','🦴','🌿'];
@@ -536,14 +615,21 @@
     document.getElementById('screen-' + screen).classList.add('active');
     if (screen === 'teacher') initTeacher();
     if (screen === 'student') initStudentPicker();
+    if (screen === 'manage') initManage();
   }
 
   // ===== TEACHER =====
-  function initTeacher() {
-    currentQuestions = [{ text: '', emoji: '❓', options: ['','','',''], answer: 0, feedback: '' }];
-    document.getElementById('quiz-title-input').value = '';
-    document.getElementById('quiz-emoji-input').value = '';
+  function initTeacher(quizToEdit) {
+    editingQuizId = quizToEdit ? quizToEdit.id : null;
+    currentQuestions = quizToEdit
+      ? quizToEdit.questions.map(q => ({ ...q }))
+      : [{ text: '', emoji: '❓', options: ['','','',''], answer: 0, feedback: '' }];
+    document.getElementById('quiz-title-input').value = quizToEdit ? quizToEdit.title : '';
+    document.getElementById('quiz-emoji-input').value = quizToEdit ? quizToEdit.emoji : '';
     document.getElementById('validation-msg').style.display = 'none';
+    // Update topbar and button for edit vs create
+    document.querySelector('#screen-teacher .topbar-title').textContent = editingQuizId ? '✏️ Modifica Quiz' : '✏️ Crea Quiz';
+    document.querySelector('#screen-teacher .btn-start-quiz').textContent = editingQuizId ? '💾 Salva modifiche' : '🚀 Salva e gioca!';
     renderQuestions();
   }
 
@@ -666,11 +752,20 @@
     });
 
     document.getElementById('validation-msg').style.display = 'none';
-    showLoading('Salvataggio in corso...');
+    showLoading(editingQuizId ? 'Salvataggio modifiche...' : 'Salvataggio in corso...');
     try {
-      const saved = await saveQuizToSupabase({ title, emoji, questions: finalQuestions });
-      hideLoading();
-      startQuiz(saved);
+      let saved;
+      if (editingQuizId) {
+        await updateQuizInSupabase(editingQuizId, { title, emoji, questions: finalQuestions });
+        saved = { id: editingQuizId, title, emoji, questions: finalQuestions };
+        hideLoading();
+        showToast('Quiz aggiornato!');
+        goTo('manage');
+      } else {
+        saved = await saveQuizToSupabase({ title, emoji, questions: finalQuestions });
+        hideLoading();
+        startQuiz(saved);
+      }
     } catch(e) {
       hideLoading();
       showValidation('Errore nel salvataggio: ' + e.message);
@@ -681,6 +776,100 @@
     const msg = document.getElementById('validation-msg');
     msg.textContent = text;
     msg.style.display = 'block';
+  }
+
+  // ===== TOAST =====
+  function showToast(msg) {
+    let t = document.getElementById('toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'toast';
+      t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#0F6E56;color:#fff;padding:12px 24px;border-radius:99px;font-family:Nunito,sans-serif;font-size:15px;font-weight:800;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.2);transition:opacity 0.3s;';
+      document.body.appendChild(t);
+    }
+    t.textContent = '✅ ' + msg;
+    t.style.opacity = '1';
+    setTimeout(() => t.style.opacity = '0', 2500);
+  }
+
+  // ===== MANAGE =====
+  async function initManage() {
+    const list = document.getElementById('manage-list');
+    list.innerHTML = '<p class="manage-empty"><span>⏳</span>Caricamento...</p>';
+    try {
+      const quizzes = await loadQuizzes();
+      if (!quizzes || quizzes.length === 0) {
+        list.innerHTML = '<div class="manage-empty"><span>📭</span>Nessun quiz ancora.<br>Creane uno!</div>';
+        return;
+      }
+      list.innerHTML = quizzes.map(q => `
+        <div class="manage-card">
+          <span class="manage-card-icon">${q.emoji}</span>
+          <div class="manage-card-info">
+            <div class="manage-card-title">${escHtml(q.title)}</div>
+            <div class="manage-card-meta">${q.questions.length} domand${q.questions.length === 1 ? 'a' : 'e'}</div>
+          </div>
+          <div class="manage-card-actions">
+            <button class="btn-icon-action btn-play-quiz" title="Gioca" onclick='startQuiz(${JSON.stringify(q).replace(/'/g,"&#39;")})'>▶</button>
+            <button class="btn-icon-action btn-edit-quiz" title="Modifica" onclick='editQuiz(${JSON.stringify(q).replace(/'/g,"&#39;")})'>✏️</button>
+            <button class="btn-icon-action btn-delete-quiz" title="Elimina" onclick="confirmDelete('${q.id}', '${escHtml(q.title)}')">🗑</button>
+          </div>
+        </div>
+      `).join('');
+    } catch(e) {
+      list.innerHTML = '<p class="manage-empty">Errore: ' + e.message + '</p>';
+    }
+  }
+
+  function editQuiz(quiz) {
+    // Go to teacher screen pre-filled with this quiz
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-teacher').classList.add('active');
+    initTeacher(quiz);
+  }
+
+  function confirmDelete(id, title) {
+    // Show confirm modal
+    let overlay = document.getElementById('delete-modal');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'delete-modal';
+      overlay.className = 'modal-overlay';
+      overlay.innerHTML = `
+        <div class="modal-box">
+          <span class="modal-emoji">🗑️</span>
+          <p class="modal-title">Eliminare il quiz?</p>
+          <p class="modal-sub" id="modal-sub-text"></p>
+          <div class="modal-btns">
+            <button class="btn-modal btn-modal-cancel" onclick="closeDeleteModal()">Annulla</button>
+            <button class="btn-modal btn-modal-confirm" id="modal-confirm-btn">Elimina</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+    }
+    document.getElementById('modal-sub-text').textContent = 'Stai per eliminare "' + title + '". Questa azione non può essere annullata.';
+    document.getElementById('modal-confirm-btn').onclick = () => doDelete(id);
+    overlay.style.display = 'flex';
+  }
+
+  function closeDeleteModal() {
+    const m = document.getElementById('delete-modal');
+    if (m) m.style.display = 'none';
+  }
+
+  async function doDelete(id) {
+    closeDeleteModal();
+    showLoading('Eliminazione in corso...');
+    try {
+      await deleteQuizFromSupabase(id);
+      hideLoading();
+      showToast('Quiz eliminato!');
+      initManage();
+    } catch(e) {
+      hideLoading();
+      alert('Errore: ' + e.message);
+    }
   }
 
   // ===== STUDENT PICKER =====
@@ -802,14 +991,12 @@
     goTo('result');
   }
 
-  // ===== INIT: ?admin = insegnante, default = alunno =====
+  // ===== INIT =====
   const isAdminMode = window.location.search.includes('admin') || window.location.hash.includes('admin');
 
   if (isAdminMode) {
-    // Insegnante: mostra la home normale
     goTo('home');
   } else {
-    // Alunno: vai direttamente alla lista quiz, nascondi tutto il resto
     document.querySelectorAll('.btn-retry-edit').forEach(b => b.style.display = 'none');
     document.querySelectorAll('.btn-retry-home').forEach(b => {
       b.textContent = '🔄 Scegli un altro quiz';
