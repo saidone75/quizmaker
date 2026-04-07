@@ -1,1 +1,1 @@
-# quizmaker
+# quizmaker-prototype
